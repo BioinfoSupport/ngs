@@ -27,6 +27,10 @@ RUN apt-get update && apt-get install -y \
       ncbi-blast+ \
       bowtie \
       bowtie2 \
+			python-htseq \
+			fastqc \
+			cutadapt \
+			subread \      
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
 # Install R packages
@@ -34,11 +38,6 @@ ADD install.R /tmp
 RUN R --no-save --no-restore -e 'source("/tmp/install.R");install_cran()'
 RUN R --no-save --no-restore -e 'source("/tmp/install.R");install_bioc()'
 #RUN R --no-save --no-restore -e 'source("/tmp/install.R");install_ml()'
-
-
-ENV REPOPATH=/home/rstudio/repository
-ADD ./ $REPOPATH
-ENV PATH=$PATH:$REPOPATH/local/bin/
 
 
 # Define default mount points

@@ -4,7 +4,7 @@
 docker build -t unigebsp/ngs ./
 
 # Build the container for production (multiple target architectures)
-docker buildx build --push --platform linux/arm64,linux/amd64 -t unigebsp/ngs ./
+docker buildx build --push --platform linux/arm64,linux/amd64 -t unigebsp/ngs:v1.0 ./
 
 # Run the container
 docker run --rm -it -v "$HOME/Documents/docker/:/home/rstudio/workdir" unigebsp/ngs bash
