@@ -1,14 +1,14 @@
+# ngs
 
+This is a docker container with tools to analyse NGS data.
 
-# Build the container for the local machine architecture (for faster debuging)
-docker build -t unigebsp/ngs ./
+## Run a shell in the container
+```
+docker run --rm -it -v "$PWD:/home/rstudio/workdir" unigebsp/ngs bash
+singularity exec docker://unigebsp/ngs bash
+```
 
-# Build the container for production (multiple target architectures)
-docker buildx build --push --platform linux/arm64,linux/amd64 -t unigebsp/ngs:v1.0 ./
-
-# Run the container
-docker run --rm -it -v "$HOME/Documents/docker/:/home/rstudio/workdir" unigebsp/ngs bash
-
-# Run the GUI
-docker run --rm -p 8787:8787 -e DISABLE_AUTH=true -v "$HOME/Documents/docker/:/home/rstudio/workdir" unigebsp/ngs
-
+## Run the GUI (Rstudio server)
+````
+docker run --rm -p 8787:8787 -e DISABLE_AUTH=true -v "$PWD:/home/rstudio/workdir" unigebsp/ngs
+```

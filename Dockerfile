@@ -33,11 +33,67 @@ RUN apt-get update && apt-get install -y \
 			subread \      
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
-# Install R packages
-ADD install.R /tmp
-RUN R --no-save --no-restore -e 'source("/tmp/install.R");install_cran()'
-RUN R --no-save --no-restore -e 'source("/tmp/install.R");install_bioc()'
-#RUN R --no-save --no-restore -e 'source("/tmp/install.R");install_ml()'
+
+
+
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# Install R packages from CRAN
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+RUN R --no-save --no-restore <<EOF
+	install.packages <- function(pkgs,...) {
+		utils::install.packages(pkgs,...)
+		ipkgs <- rownames(installed.packages())
+		stopifnot(all(pkgs %in% ipkgs))
+	}
+	
+	# Development tools
+	install.packages(c('Rcpp', 'devtools', 'rmarkdown', 'optparse', 'testthat', 'usethis'))
+	install.packages(c('tidyverse'))
+	
+	# File formats
+	install.packages(c('curl', 'XML', 'rjson', 'jsonlite'))
+	
+	# Graph
+	install.packages(c('Matrix', 'igraph', 'tidygraph', 'ggraph'))
+	
+	# ggplot extensions
+	install.packages(c('scales', 'ggforce', 'ggrepel', 'patchwork'))
+	install.packages(c('RColorBrewer', 'wesanderson'))
+	install.packages(c('jpeg', 'png'))
+	
+	# Shiny extensions
+	install.packages(c('bs4Dash', 'reactlog'))
+	
+	# Dimension reduction
+	install.packages(c('irlba', 'umap', 'Rtsne'))
+	
+	# Machine learning
+	install.packages(c('RandomForest', 'e1071'));torch::install_torch()
+	install.packages(c('torch', 'luz'));torch::install_torch()
+EOF
+
+
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# Install R packages from Bioconductor
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+RUN R --no-save --no-restore <<EOF
+	bioc_install <- function(pkgs,...) {
+		BiocManager::install(pkgs,...)
+		ipkgs <- rownames(installed.packages())
+		stopifnot(all(pkgs %in% ipkgs))
+	}
+  
+  # Genomic
+	bioc_install(c('BiocParallel','ShortRead', 'Biostrings', 'Rsamtools', 'rtracklayer', 'GenomicRanges', 'GenomicFeatures', 'GenomicAlignments', 'SummarizedExperiment'))
+	bioc_install(c('edgeR', 'DESeq2'))
+	bioc_install('fgsea')
+  
+  # Single-cell
+	bioc_install(c('HDF5Array','SingleCellExperiment', 'DropletUtils', 'scuttle', 'scran', 'scater'))
+	
+	# Flow cytometry
+	bioc_install(c('flowCore','flowWorkspace','CytoML','FlowSOM'))
+EOF
 
 
 # Define default mount points
