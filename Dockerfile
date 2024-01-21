@@ -68,7 +68,7 @@ RUN R --no-save --no-restore <<EOF
 	install.packages(c('irlba', 'umap', 'Rtsne'))
 	
 	# Machine learning
-	install.packages(c('RandomForest', 'e1071'));torch::install_torch()
+	install.packages(c('randomForest', 'e1071'))
 	install.packages(c('torch', 'luz'));torch::install_torch()
 EOF
 
