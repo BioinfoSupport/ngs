@@ -5,7 +5,7 @@ This is a docker container with tools to analyse NGS data.
 ## Run a shell in the container
 ```
 docker run --rm -it -v "$PWD:/home/rstudio/workdir" unigebsp/ngs bash
-singularity exec docker://unigebsp/ngs bash
+singularity exec "docker://unigebsp/ngs" bash
 ```
 
 ## Run the GUI (Rstudio server)
