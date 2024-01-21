@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y \
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 RUN R --no-save --no-restore <<EOF
 	install.packages <- function(pkgs,...) {
-		utils::install.packages(pkgs,...)
+		utils::install.packages(pkgs,Ncpus=4L,...)
 		ipkgs <- rownames(installed.packages())
 		stopifnot(all(pkgs %in% ipkgs))
 	}
@@ -77,7 +77,7 @@ EOF
 # Install R packages from Bioconductor
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 RUN R --no-save --no-restore <<EOF
-	bioc_install <- function(pkgs,...) {
+	bioc_install <- function(pkgs,Ncpus=4L,...) {
 		BiocManager::install(pkgs,...)
 		ipkgs <- rownames(installed.packages())
 		stopifnot(all(pkgs %in% ipkgs))
