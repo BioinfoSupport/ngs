@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y \
       bwa \
       minimap2 \
       kmc \
+      jellyfish \
       libkmc-dev \
       bcalm \
       rna-star \
@@ -30,47 +31,27 @@ RUN apt-get update && apt-get install -y \
 			python-htseq \
 			fastqc \
 			cutadapt \
-			subread \      
+			subread \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
-
+# pilon, unicycler, flye, spades, medaka
 
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 # Install R packages from CRAN
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-RUN R --no-save --no-restore <<EOF
-	install.packages <- function(pkgs,...) {
-		utils::install.packages(pkgs,Ncpus=4L,...)
-		ipkgs <- rownames(installed.packages())
-		stopifnot(all(pkgs %in% ipkgs))
-	}
-	
-	# Development tools
-	install.packages(c('Rcpp', 'devtools', 'rmarkdown', 'optparse', 'testthat', 'usethis'))
-	install.packages(c('tidyverse'))
-	
-	# File formats
-	install.packages(c('curl', 'XML', 'rjson', 'jsonlite'))
-	
-	# Graph
-	install.packages(c('Matrix', 'igraph', 'tidygraph', 'ggraph'))
-	
-	# ggplot extensions
-	install.packages(c('scales', 'ggforce', 'ggrepel', 'patchwork'))
-	install.packages(c('RColorBrewer', 'wesanderson'))
-	install.packages(c('jpeg', 'png'))
-	
-	# Shiny extensions
-	install.packages(c('bs4Dash', 'reactlog'))
-	
-	# Dimension reduction
-	install.packages(c('irlba', 'umap', 'Rtsne'))
-	
-	# Machine learning
-	install.packages(c('randomForest', 'e1071'))
-	#install.packages(c('torch', 'luz'));torch::install_torch()
-EOF
+RUN install2.r --error --skipinstalled --ncpus -1 \
+	    Rcpp devtools rmarkdown optparse testthat usethis tidyverse \
+	    curl XML rjson jsonlite \
+	    Matrix igraph tidygraph ggraph \
+			scales ggforce ggrepel patchwork \
+			RColorBrewer wesanderson \
+			jpeg png \
+			bs4Dash reactlog \
+			irlba umap Rtsne \
+			randomForest e1071 \
+    && rm -rf /tmp/downloaded_packages
+#install.packages(c('torch', 'luz'));torch::install_torch()
 
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#

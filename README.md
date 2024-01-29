@@ -17,6 +17,6 @@ docker run --rm -p 8787:8787 -e DISABLE_AUTH=true -v "$PWD:/home/rstudio/workdir
 
 ## Build the container
 ```
-docker buildx build --push --platform linux/arm64,linux/amd64 -t unigebsp/ngs:v1.0 ./
+docker buildx build --push --platform linux/arm64,linux/amd64 -t unigebsp/ngs:v1.1 ./
 ```
 
