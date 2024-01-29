@@ -4,13 +4,14 @@ This is a docker container with tools to analyse NGS data.
 
 ## Run a shell in the container
 ```
-docker run --rm -it -v "$PWD:/home/rstudio/workdir" unigebsp/ngs bash
-singularity exec "docker://unigebsp/ngs" bash
+docker run --rm -it -v "$PWD:/home/rstudio/workdir" unigebsp/ngs:v1.1 bash
+
+singularity exec "docker://unigebsp/ngs:v1.1" bash
 ```
 
 ## Run the GUI (Rstudio server)
 ```
-docker run --rm -p 8787:8787 -e DISABLE_AUTH=true -v "$PWD:/home/rstudio/workdir" unigebsp/ngs
+docker run --rm -p 8787:8787 -e DISABLE_AUTH=true -v "$PWD:/home/rstudio/workdir" unigebsp/ngs:v1.1
 ```
 
 
@@ -19,4 +20,7 @@ docker run --rm -p 8787:8787 -e DISABLE_AUTH=true -v "$PWD:/home/rstudio/workdir
 ```
 docker buildx build --push --platform linux/arm64,linux/amd64 -t unigebsp/ngs:v1.1 ./
 ```
+
+
+
 
