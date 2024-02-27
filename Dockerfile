@@ -50,32 +50,27 @@ RUN install2.r --error --skipinstalled --ncpus -1 \
 			bs4Dash reactlog \
 			irlba umap Rtsne \
 			randomForest e1071 \
+			torch luz \
+			shinyjs bs4Dash sortable shinycssloaders reactlog shinyWidgets \
     && rm -rf /tmp/downloaded_packages
-#install.packages(c('torch', 'luz'));torch::install_torch()
 
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 # Install R packages from Bioconductor
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-RUN R --no-save --no-restore <<EOF
-	bioc_install <- function(pkgs,Ncpus=4L,...) {
-		BiocManager::install(pkgs,...)
-		ipkgs <- rownames(installed.packages())
-		stopifnot(all(pkgs %in% ipkgs))
-	}
-  
-  # Genomic
-	bioc_install(c('BiocParallel','ShortRead', 'Biostrings', 'Rsamtools', 'rtracklayer', 'GenomicRanges', 'GenomicFeatures', 'GenomicAlignments', 'SummarizedExperiment'))
-	bioc_install(c('edgeR', 'DESeq2'))
-	bioc_install('fgsea')
-  
-  # Single-cell
-	bioc_install(c('HDF5Array','SingleCellExperiment', 'DropletUtils', 'scuttle', 'scran', 'scater'))
-	
-	# Flow cytometry
-	bioc_install(c('flowCore','flowWorkspace','CytoML','FlowSOM'))
-EOF
 
+ADD install_bioc.r /usr/local/bin/
+RUN install2.r --error --skipinstalled --ncpus -1 \
+			BiocParallel ShortRead Biostrings Rsamtools rtracklayer GenomicRanges \
+			GenomicFeatures GenomicAlignments SummarizedExperiment \
+			edgeR DESeq2 \
+			fgsea \
+		  HDF5Array SingleCellExperiment DropletUtils scuttle scran scater \
+			flowCore flowWorkspace CytoML FlowSOM \
+    && rm -rf /tmp/downloaded_packages
+
+# Set default preferences
+ADD rstudio-prefs.json /etc/rstudio/
 
 # Define default mount points
 VOLUME /home/rstudio/workdir

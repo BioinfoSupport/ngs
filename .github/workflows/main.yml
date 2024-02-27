@@ -26,5 +26,5 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: unigebsp/ngs:v1.1
+          tags: unigebsp/ngs
     
