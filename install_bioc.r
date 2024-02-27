@@ -15,12 +15,11 @@ library(docopt)
 libloc <- .libPaths()[1]
 
 ## configuration for docopt
-doc <- paste0("Usage: install_bioc.r [-l LIBLOC] [-h] [-x] [-s] [-d DEPS] [-n NCPUS] [-r REPOS...] [-m METHOD] [-t TYPE] [--error] [--skipmissing] [--] [PACKAGES ...]
+doc <- paste0("Usage: install_bioc.r [-l LIBLOC] [-h] [-x] [-s] [-d DEPS] [-n NCPUS] [-m METHOD] [-t TYPE] [--error] [--skipmissing] [--] [PACKAGES ...]
 
 -l --libloc LIBLOC  location in which to install [default: ", libloc, "]
 -d --deps DEPS      install suggested dependencies as well [default: NA]
 -n --ncpus NCPUS    number of processes to use for parallel install, -1 selects all cores [default: getOption]
--r --repos REPOS    repositor(y|ies) to use, or NULL for file [default: getOption]
 -e --error          throw error and halt instead of a warning [default: FALSE]
 --skipmissing       use with the --error option, skip the packages missing error [default: FALSE]
 -s --skipinstalled  skip installing already installed packages [default: FALSE]
@@ -53,16 +52,6 @@ if (opt$deps == "TRUE" || opt$deps == "FALSE") {
     opt$deps <- as.logical(opt$deps)
 } else if (opt$deps == "NA") {
     opt$deps <- NA
-}
-
-## docopt results are characters, so if we meant NULL we have to set NULL
-if (length(opt$repos) == 1 && "NULL" %in% opt$repos) {
-    opt$repos <- NULL
-}
-
-if ("getOption" %in% opt$repos) {
-    ## as littler can now read ~/.littler.r and/or /etc/littler.r we can preset elsewhere
-    opt$repos <- c(opt$repos[which(opt$repos != "getOption")], getOption("repos"))
 }
 
 if (opt$ncpus == "getOption") {
@@ -113,10 +102,9 @@ install_packages2 <- function(pkgs, ..., error = FALSE, skipmissing = FALSE, ski
 isMatchingFile <- function(f) (file.exists(f) && grepl("(\\.tar\\.gz|\\.tgz|\\.zip)$", f)) || (f == ".")
 
 ## helper function which switches to local (ie NULL) repo if matching file is presented
-installArg <- function(f, lib, rep, dep, iopts, error, skipmissing, skipinstalled, ncpus, method, type) {
+installArg <- function(f, lib, dep, iopts, error, skipmissing, skipinstalled, ncpus, method, type) {
     install_packages2(pkgs=f,
                       lib=lib,
-                      repos=if (isMatchingFile(f)) NULL else rep,
                       dependencies=dep,
                       INSTALL_opts=iopts,
                       Ncpus = ncpus,
@@ -150,12 +138,11 @@ isLocal <- sapply(opt$PACKAGES, isMatchingFile)
 ## packages pass vector to install_packages2 which does the rest (and
 ## possibly in parallel using up to ncpus)
 if (any(isLocal)) {
-    sapply(opt$PACKAGES, installArg, opt$libloc, opt$repos, opt$deps,
+    sapply(opt$PACKAGES, installArg, opt$libloc, opt$deps,
            installOpts, opt$error, opt$skipmissing, opt$skipinstalled, opt$ncpus, opt$method, opt$type)
 } else {
     install_packages2(pkgs = opt$PACKAGES,
                       lib = opt$libloc,
-                      repos = opt$repos,
                       dependencies = opt$deps,
                       INSTALL_opts = installOpts,
                       Ncpus = opt$ncpus,
