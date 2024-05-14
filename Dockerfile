@@ -1,4 +1,4 @@
-FROM bioconductor/bioconductor_docker:3.18 as base
+FROM bioconductor/bioconductor_docker:3.19 as base
 
 # Install packages dependencies
 RUN apt-get update && apt-get install -y \
