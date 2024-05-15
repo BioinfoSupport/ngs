@@ -193,4 +193,4 @@ ADD rstudio-prefs.json /etc/rstudio/
 # Define default mount points
 VOLUME /home/rstudio/workdir
 WORKDIR /home/rstudio/workdir
-
+ENV PATH="/usr/local/bin:${PATH}"
