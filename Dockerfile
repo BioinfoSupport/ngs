@@ -205,7 +205,8 @@ RUN mkdir -p /tmp/flye \
    elif [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
       make; \
    fi) \
-   && python3 setup.py install
+   && python3 setup.py install \
+   && rm -rf /tmp/flye
 
 
 # Set default rstudio preferences
