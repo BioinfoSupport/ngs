@@ -82,19 +82,7 @@ RUN mkdir -p /app \
    && make
    
    
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-# flye
-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-FROM base as flye
-RUN mkdir -p /app \
-   && curl -kL https://github.com/fenderglass/Flye/archive/refs/tags/2.9.4.tar.gz \
-   | tar -C /app --strip-components=1 -zxf -
-RUN cd /app \
-  && (if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-      make arm_neon=1 aarch64=1; \
-  elif [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-      make; \
-  fi)
+
 
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
@@ -208,7 +196,16 @@ RUN ln -sf libhts.so.1.19.1 /usr/lib/libhts.so \
 COPY --from=rotate /app/rotate/rotate /app/rotate/composition /usr/bin
 
 # flye
-COPY --from=flye /app/bin/* /usr/bin
+RUN mkdir -p /tmp/flye \
+   && curl -kL https://github.com/fenderglass/Flye/archive/refs/tags/2.9.4.tar.gz \
+   | tar -C /tmp/flye --strip-components=1 -zxf - \
+   && cd /tmp/flye \
+   && (if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+      make arm_neon=1 aarch64=1; \
+   elif [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+      make; \
+   fi) \
+   && python3 setup.py install
 
 
 # Set default rstudio preferences
