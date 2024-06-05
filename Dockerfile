@@ -72,6 +72,29 @@ RUN cd /app \
   fi)
 
 
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# rotate
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+FROM base as rotate
+RUN mkdir -p /app \
+   && git -C /app clone https://github.com/richarddurbin/rotate.git \
+   && cd /app/rotate \
+   && make
+   
+   
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+# flye
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+FROM base as flye
+RUN mkdir -p /app \
+   && curl -kL https://github.com/fenderglass/Flye/archive/refs/tags/2.9.4.tar.gz \
+   | tar -C /app --strip-components=1 -zxf -
+RUN cd /app \
+  && (if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+      make arm_neon=1 aarch64=1; \
+  elif [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+      make; \
+  fi)
 
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
@@ -98,9 +121,8 @@ RUN apt-get update && apt-get install -y \
       cutadapt \
       subread \
       salmon \
-      rsem \
 && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
-# pilon, unicycler, flye, spades, medaka
+# rsem, pilon, unicycler, flye, spades, medaka
 
 
 
@@ -182,9 +204,11 @@ COPY --from=htslib /app/htslib.pc /usr/lib/pkgconfig/
 RUN ln -sf libhts.so.1.19.1 /usr/lib/libhts.so \
  && ln -sf libhts.so.1.19.1 /usr/lib/libhts.so.3
 
+# rotate
+COPY --from=rotate /app/rotate/rotate /app/rotate/composition /usr/bin
 
-
-
+# flye
+COPY --from=flye /app/bin/* /usr/bin
 
 
 # Set default rstudio preferences
