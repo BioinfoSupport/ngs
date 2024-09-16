@@ -135,7 +135,7 @@ RUN install2.r --error --skipinstalled --ncpus -1 \
 ADD install_bioc.r /usr/local/bin/
 RUN install_bioc.r --error --skipinstalled --ncpus -1 \
 			BiocParallel ShortRead Biostrings Rsamtools rtracklayer GenomicRanges \
-			GenomicFeatures GenomicAlignments SummarizedExperiment \
+			GenomicFeatures GenomicAlignments SummarizedExperiment GenomicFiles \
 			edgeR DESeq2 \
 			fgsea \
 		  HDF5Array SingleCellExperiment DropletUtils scuttle scran scater \
